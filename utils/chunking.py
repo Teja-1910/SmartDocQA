@@ -12,3 +12,4 @@ def chunk_text(text,chunk_size=500,overlap=100):
             chunks.append(chunk)
         start = end - overlap
         return chunks 
+    
