@@ -1,4 +1,4 @@
-def chunk_text(text,chunk_size=500,overlap=100):
+def chunk_text(text,chunk_size=150,overlap=30):
     if overlap >= chunk_size:
         raise ValueError("Overlap must be smaller than chun_size")
     if not text:
@@ -11,5 +11,6 @@ def chunk_text(text,chunk_size=500,overlap=100):
         if chunk.strip():
             chunks.append(chunk)
         start = end - overlap
-        return chunks 
+    return chunks 
     
+

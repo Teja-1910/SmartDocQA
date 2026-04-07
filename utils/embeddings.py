@@ -6,3 +6,12 @@ def get_embeddings(chunks):
     embeddings = model.encode(chunks,convert_to_numpy=True)
     return embeddings
 
+
+
+
+
+
+
+
+
+

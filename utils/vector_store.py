@@ -6,6 +6,7 @@ collection = client.get_or_create_collection(name = "documents")
 
 def store_embeddings(chunks, embeddings):
     ids = [ str(i) for i in range(len(chunks))]
+    
     collection.add(
         documents = chunks,
         embeddings=embeddings.tolist(),
@@ -18,4 +19,17 @@ def query_embeddings(query_embedding, k=3):
         query_embeddings = query_embedding.tolist(),
         n_results=k
     )
-    return results['documents'][0]
+    docs =  results['documents'][0]
+    print("RETRIEVED DOCS:", docs)
+    return docs
+            
+            
+            
+            
+            
+            
+            
+            
+            
+
+
