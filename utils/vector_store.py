@@ -1,13 +1,21 @@
-import faiss
-import numpy as np
+import chromadb
 
-def create_faiss_index(embeddings):
-    dimension = embeddings.shape[1]
-    index = faiss.IndexFlatL2(dimension)
-    index.add(embeddings)
-    return index
+client = chromadb.Client()
 
-def search(index,query_vector,k=3):
-    distances, indices = index.search(query_vector, k)
-    return indices
+collection = client.get_or_create_collection(name = "documents")
+
+def store_embeddings(chunks, embeddings):
+    ids = [ str(i) for i in range(len(chunks))]
+    collection.add(
+        documents = chunks,
+        embeddings=embeddings.tolist(),
+        ids = ids
+    )
     
+
+def query_embeddings(query_embedding, k=3):
+    results = collection.query(
+        query_embeddings = query_embedding.tolist(),
+        n_results=k
+    )
+    return results['documents'][0]
