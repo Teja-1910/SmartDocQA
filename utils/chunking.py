@@ -1,4 +1,4 @@
-def chunk_text(text, chunk_size=150, overlap=30):
+def chunk_text(text, chunk_size=500, overlap=100):
     if overlap >= chunk_size:
         raise ValueError("Overlap must be smaller than chunk_size")
 

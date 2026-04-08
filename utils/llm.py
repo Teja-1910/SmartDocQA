@@ -5,16 +5,11 @@ def generate_answer(context, question):
     prompt = f"""
 You are a document question answering system.
 
-Find the MOST relevant answer from the context.
-
+Answer ONLY from the given context.
 Do NOT guess.
 Do NOT use outside knowledge.
 
-Prefer:
-- Titles for topic questions
-- Exact matching phrases
-
-Return ONLY the final answer.
+Return short and precise answer.
 
 Context:
 {context}
@@ -30,14 +25,13 @@ Answer:
         json={
             "model": "phi",
             "prompt": prompt,
-            "stream": False,
-            "temperature": 0
+            "stream": False
         }
     )
 
     result = response.text.strip()
 
     try:
-        return json.loads(result)["response"]
-    except Exception:
+        return json.loads(result)["response"].strip()
+    except:
         return result

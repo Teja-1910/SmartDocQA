@@ -1,64 +1,68 @@
 import streamlit as st
 from utils.chunking import chunk_text
 from utils.embeddings import get_embeddings
-from utils.vector_store import store_embeddings, query_embeddings
+from utils.vector_store import store_embeddings, query_embeddings, company_exists
 from utils.llm import generate_answer
 from utils.pdf_loader import load_pdf
 
-st.title("📄 SmartDocQA - Centralized Document System")
-
+st.title("📄 SmartDocQA - Centralized Company Knowledge System")
 
 role = st.selectbox("Select Role", ["User", "Admin"])
 
 
-
+# ================= ADMIN =================
 if role == "Admin":
-    st.subheader("📤 Upload Document")
+    st.subheader("📤 Upload  Document(*Ensure that pdf is saved with company name)")
 
     uploaded_file = st.file_uploader("Upload PDF", type="pdf")
 
     if uploaded_file:
-        text = load_pdf(uploaded_file)
+        # 🔥 AUTO COMPANY NAME
+        company_name = uploaded_file.name.split(".")[0]
 
+        text = load_pdf(uploaded_file)
         chunks = chunk_text(text)
         embeddings = get_embeddings(chunks)
 
-        
-        store_embeddings(chunks, embeddings, uploaded_file.name)
+        store_embeddings(chunks, embeddings, company_name)
 
-        st.success(f"{uploaded_file.name} processed and stored successfully!")
-
+        st.success(f"{company_name} document stored successfully!")
 
 
+# ================= USER =================
 else:
     st.subheader("🔍 Ask Questions")
 
-    
-    file_name = st.text_input("Enter document name (optional)")
+    st.info("💡 Ask questions like: leave policy, test date, methodology")
 
+    company_name = st.text_input("Enter Company Name")
     question = st.text_input("Enter your question")
 
     if st.button("Get Answer"):
 
-        if question:
-            query_embedding = get_embeddings([question])
+        if question and company_name:
 
-           
-            results = query_embeddings(
-                query_embedding,
-                file_name=file_name if file_name else None
-            )
+            # 🔥 VALIDATION
+            if not company_exists(company_name):
+                st.error(
+                    "⚠️ The requested company data is not available. "
+                    "Please verify the company name or contact the administrator."
+                )
 
-          
-            context = " ".join(results)
+            else:
+                query_embedding = get_embeddings([question])
 
-            
+                results = query_embeddings(
+                    query_embedding,
+                    company_name=company_name
+                )
 
-            
-            answer = generate_answer(context, question)
+                context = " ".join(results)
 
-            st.subheader("📌 Answer:")
-            st.write(answer)
+                answer = generate_answer(context, question)
+
+                st.subheader("📌 Answer:")
+                st.write(answer)
 
         else:
-            st.warning("Please enter a question")
+            st.warning("Please enter both company name and question")
