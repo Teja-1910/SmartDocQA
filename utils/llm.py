@@ -3,33 +3,41 @@ import json
 
 def generate_answer(context, question):
     prompt = f"""
-    Answer the question ONLY using the context.
+You are a document question answering system.
 
-    Choose the most relevant information from the context.
+Find the MOST relevant answer from the context.
 
-    Return a short and exact answer.
+Do NOT guess.
+Do NOT use outside knowledge.
 
-    Context:
-    {context}
+Prefer:
+- Titles for topic questions
+- Exact matching phrases
 
-    Question:
-    {question}
+Return ONLY the final answer.
 
-    Answer:
-    """
-    
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+"""
+
     response = requests.post(
         "http://localhost:11434/api/generate",
         json={
-            "model":"phi",
+            "model": "phi",
             "prompt": prompt,
-            "stream": False
+            "stream": False,
+            "temperature": 0
         }
-        
     )
+
     result = response.text.strip()
-    
+
     try:
         return json.loads(result)["response"]
-    except Exception as e:
+    except Exception:
         return result

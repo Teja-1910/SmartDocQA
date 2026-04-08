@@ -5,6 +5,8 @@ def load_pdf(file):
     text = ""
 
     for page in reader.pages:
-        text += page.extract_text()
+        extracted = page.extract_text()
+        if extracted:
+            text += extracted
 
     return text
